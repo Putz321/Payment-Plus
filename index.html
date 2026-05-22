@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>AllSmart'Payment | Digital Payment</title>
+    <title>Putz Payment | Modern Digital Payment</title>
     <style>
         * {
             margin: 0;
@@ -150,10 +150,12 @@
             border-color: var(--accent);
         }
 
-        /* HEADER */
+        /* HEADER WITH STORE LOGO */
         .header {
-            text-align: center;
-            padding: 48px 0 32px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 0 32px;
             animation: fadeInDown 0.5s ease;
         }
 
@@ -162,31 +164,59 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        .store-logo {
+            flex-shrink: 0;
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .store-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .store-logo-placeholder {
+            font-size: 32px;
+        }
+
+        .store-info {
+            flex: 1;
+        }
+
         .badge {
             display: inline-block;
             background: var(--accent-glow);
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 40px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 500;
             color: var(--accent);
-            margin-bottom: 16px;
+            margin-bottom: 8px;
         }
 
         .store-name {
-            font-size: 32px;
+            font-size: 24px;
             font-weight: 700;
             letter-spacing: -0.5px;
             background: var(--gradient);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
         .slogan {
-            font-size: 14px;
+            font-size: 12px;
             color: var(--text-secondary);
+            line-height: 1.4;
         }
 
         /* TAB MENU MODERN */
@@ -418,7 +448,6 @@
             font-weight: 600;
         }
 
-        /* Ceklis Biru di Belakang Nama Menu (seperti TikTok/Instagram) */
         .verified-check {
             display: inline-flex;
             align-items: center;
@@ -597,7 +626,7 @@
             transform: scale(0.98);
         }
 
-        /* QRIS MODAL */
+        /* QRIS MODAL - FIXED with custom image */
         .qris-modal {
             position: fixed;
             top: 0;
@@ -617,7 +646,7 @@
             border-radius: 32px;
             padding: 32px;
             width: 85%;
-            max-width: 320px;
+            max-width: 340px;
             text-align: center;
             animation: zoomIn 0.3s ease;
         }
@@ -629,6 +658,9 @@
 
         .qris-card img {
             width: 100%;
+            max-width: 280px;
+            height: auto;
+            border-radius: 16px;
         }
 
         .qris-close {
@@ -669,7 +701,7 @@
 <div class="loading-screen" id="loadingScreen">
     <div class="loader">
         <div class="loader-ring"></div>
-        <div class="loader-text">Payment Smart</div>
+        <div class="loader-text">Loading Website...</div>
         <div class="loader-bar">
             <div class="loader-bar-fill" id="loaderFill"></div>
         </div>
@@ -686,10 +718,17 @@
     </div>
 
     <div class="container">
+        <!-- HEADER WITH CUSTOM LOGO 1:1 -->
         <div class="header">
-            <div class="badge">VERIFIED MERCHANT</div>
-            <h1 class="store-name">Putz Pymnt DEV</h1>
-            <p class="slogan">Selamat Datang Di All Payment Kami<br>Pilih Salah Satu Pembayaran</p>
+            <div class="store-logo">
+                <img src="https://files.catbox.moe/pkq8gn.png" alt="Store Logo" 
+                     onerror="this.src='https://placehold.co/200x200/6366f1/white?text=STORE'; this.onerror=null;">
+            </div>
+            <div class="store-info">
+                <div class="badge">VERIFIED MERCHANT</div>
+                <h1 class="store-name">Putz DSGN DEV</h1>
+                <p class="slogan">Selamat Datang Di All Payment Kami<br>Pilih Salah Satu Pembayaran</p>
+            </div>
         </div>
 
         <!-- TAB MENU -->
@@ -714,7 +753,7 @@
             </div>
         </div>
 
-        <!-- SOCIAL MEDIA SECTION dengan Ceklis Biru di Belakang Nama -->
+        <!-- SOCIAL MEDIA SECTION -->
         <div class="social-section">
             <div class="social-title">
                 <span>🔗</span> Gabung Sosial Media Resmi Admin
@@ -738,7 +777,7 @@
         </div>
 
         <footer>
-            <p>© 2024 AllSmart'Payment — Secure Payment Gateway</p>
+            <p>© 2024 Putz Payment — Secure Payment Gateway</p>
         </footer>
     </div>
 </div>
@@ -756,11 +795,10 @@
     </div>
 </div>
 
-<!-- QRIS MODAL -->
+<!-- QRIS MODAL - CUSTOM IMAGE -->
 <div class="qris-modal" id="qrisModal">
     <div class="qris-card">
-        <img id="qrisImage" src="" alt="QRIS">
-        <br>
+        <img id="qrisImage" src="" alt="QRIS Code">
         <button class="qris-close" id="qrisCloseBtn">Tutup</button>
     </div>
 </div>
@@ -768,24 +806,29 @@
 <script>
     // PAYMENT DATA
     const ewalletData = [
-        { name: "DANA", number: "081234567890", color: "#1572e4", icon: "D" },
-        { name: "OVO", number: "081234567891", color: "#4caf50", icon: "O" },
-        { name: "GoPay", number: "081234567892", color: "#00a9d4", icon: "G" },
-        { name: "LinkAja", number: "081234567893", color: "#ff6b00", icon: "L" }
+        { name: "DANA", number: "Belum Tersedia", color: "#1572e4", icon: "D" },
+        { name: "OVO", number: "Belum Tersedia", color: "#4caf50", icon: "O" },
+        { name: "GoPay", number: "Belum Tersedia", color: "#00a9d4", icon: "G" },
+        { name: "LinkAja", number: "Belum Tersedia", color: "#ff6b00", icon: "L" }
     ];
 
     const bankData = [
-        { name: "BRI", number: "888101234567890", color: "#004d99", icon: "B" },
-        { name: "BCA", number: "1234567891", color: "#003399", icon: "B" },
-        { name: "Mandiri", number: "1234567892", color: "#ff6600", icon: "M" },
-        { name: "BNI", number: "1234567893", color: "#0055aa", icon: "B" }
+        { name: "BRI", number: "Belum Tersedia", color: "#004d99", icon: "B" },
+        { name: "BCA", number: "Belum Tersedia", color: "#003399", icon: "B" },
+        { name: "Mandiri", number: "Belum Tersedia", color: "#ff6600", icon: "M" },
+        { name: "BNI", number: "Belum Tersedia", color: "#0055aa", icon: "B" }
     ];
 
+    // QRIS dengan CUSTOM IMAGE dari link Catbox.moe
+    // GANTI LINK INI dengan link gambar QRIS kamu dari Catbox
+    const customQrisImage = "https://files.catbox.moe/zwf1ny.jpg";
+    // Catatan: Ganti "https://files.catbox.moe/example.jpg" dengan link asli gambar QRIS kamu
+    
     const qrisData = [
-        { name: "QRIS All Payment", qrisUrl: "https://files.catbox.moe/zwf1ny.jpg"+Date.now(), color: "#6366f1", icon: "Q" }
+        { name: "QRIS All Payment", qrisUrl: customQrisImage, color: "#6366f1", icon: "Q" }
     ];
 
-    // SOCIAL MEDIA DATA dengan ceklis biru di belakang nama
+    // SOCIAL MEDIA DATA
     const socialData = [
         { name: "Grup WhatsApp", url: "https://chat.whatsapp.com/", icon: "💬", color: "#25D366" },
         { name: "Saluran WhatsApp", url: "https://whatsapp.com/channel/", icon: "📢", color: "#25D366" },
@@ -877,7 +920,7 @@
         return div;
     }
 
-    // RENDER SOCIAL MEDIA dengan ceklis biru di belakang nama (seperti centang biru TikTok/IG)
+    // RENDER SOCIAL MEDIA
     function renderSocialMedia() {
         const container = document.getElementById('socialGrid');
         container.innerHTML = '';
@@ -964,9 +1007,20 @@
         }
     }
 
-    function openQrisModal(url) {
+    // QRIS MODAL dengan CUSTOM IMAGE
+    function openQrisModal(imageUrl) {
         const modal = document.getElementById('qrisModal');
-        document.getElementById('qrisImage').src = url;
+        const img = document.getElementById('qrisImage');
+        
+        // Set image source
+        img.src = imageUrl;
+        
+        // Handle image load error
+        img.onerror = function() {
+            this.src = 'https://placehold.co/400x400/6366f1/white?text=QRIS+CODE';
+            showToast('Gambar QRIS sedang dimuat ulang...', '#f59e0b');
+        };
+        
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
@@ -1008,7 +1062,7 @@ Detail:
 Bukti transfer terlampir.
 
 Terima kasih.`;
-        window.open(`https://wa.me/6281234567890?text=${encodeURIComponent(msg)}`, '_blank');
+        window.open(`https://wa.me/62882005747303?text=${encodeURIComponent(msg)}`, '_blank');
         showToast('Membuka WhatsApp...', '#25D366');
     }
 
