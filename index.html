@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>AllSmart'Payment | Digital Payment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* VARIABLES */
+        :root {
+            --bg-primary: #09090b;
+            --bg-secondary: #18181b;
+            --bg-card: #27272a;
+            --bg-elevated: #3f3f46;
+            --text-primary: #fafafa;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --border: #3f3f46;
+            --accent: #6366f1;
+            --accent-soft: #8183f4;
+            --accent-glow: rgba(99, 102, 241, 0.15);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gradient: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
+            --verified: #3b82f6;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f4f4f5;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-elevated: #f4f4f5;
+            --text-primary: #18181b;
+            --text-secondary: #52525b;
+            --text-muted: #a1a1aa;
+            --border: #e4e4e7;
+            --accent: #4f46e5;
+            --accent-glow: rgba(79, 70, 229, 0.08);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* LOADING SCREEN */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #09090b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .loader {
+            text-align: center;
+        }
+
+        .loader-ring {
+            width: 48px;
+            height: 48px;
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            font-size: 12px;
+            font-weight: 500;
+            color: #a1a1aa;
+            letter-spacing: 2px;
+        }
+
+        .loader-bar {
+            width: 200px;
+            height: 2px;
+            background: rgba(99, 102, 241, 0.2);
+            border-radius: 2px;
+            margin: 16px auto 0;
+            overflow: hidden;
+        }
+
+        .loader-bar-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #a855f7);
+            transition: width 0.1s linear;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* THEME TOGGLE */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .theme-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 42px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            color: var(--text-primary);
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.05);
+            border-color: var(--accent);
+        }
+
+        /* HEADER */
+        .header {
+            text-align: center;
+            padding: 48px 0 32px;
+            animation: fadeInDown 0.5s ease;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--accent-glow);
+            padding: 5px 12px;
+            border-radius: 40px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        .store-name {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .slogan {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* TAB MENU MODERN */
+        .tab-container {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 6px;
+            margin: 24px 0;
+            border: 1px solid var(--border);
+        }
+
+        .tab-header {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px;
+            scrollbar-width: none;
+        }
+
+        .tab-header::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 8px;
+            background: transparent;
+            border: none;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        /* CONTENT CONTAINER */
+        .content-container {
+            position: relative;
+            min-height: 420px;
+        }
+
+        .tab-pane {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.25s ease, transform 0.3s ease;
+        }
+
+        .tab-pane.active-pane {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            animation: slideUpIn 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        @keyframes slideUpIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* PAYMENT ITEMS */
+        .payment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .payment-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            animation: fadeInCard 0.3s ease backwards;
+        }
+
+        @keyframes fadeInCard {
+            from {
+                opacity: 0;
+                transform: translateX(-15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .payment-card:hover {
+            border-color: var(--accent);
+            transform: translateX(6px);
+            background: var(--bg-elevated);
+        }
+
+        .payment-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .payment-icon {
+            width: 52px;
+            height: 52px;
+            background: var(--bg-elevated);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .payment-card:hover .payment-icon {
+            transform: scale(1.05);
+        }
+
+        .payment-info h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .payment-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .payment-arrow {
+            color: var(--text-muted);
+            font-size: 20px;
+            transition: transform 0.3s;
+        }
+
+        .payment-card:hover .payment-arrow {
+            transform: translateX(6px);
+            color: var(--accent);
+        }
+
+        /* SOCIAL MEDIA SECTION */
+        .social-section {
+            margin: 32px 0 24px;
+        }
+
+        .social-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            padding-left: 4px;
+        }
+
+        .social-title span {
+            font-size: 18px;
+        }
+
+        .social-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .social-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: fadeInCard 0.3s ease backwards;
+        }
+
+        .social-item:hover {
+            border-color: var(--accent);
+            transform: translateX(4px);
+            background: var(--bg-elevated);
+        }
+
+        .social-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .social-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--bg-elevated);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .social-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .social-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        /* Ceklis Biru di Belakang Nama Menu (seperti TikTok/Instagram) */
+        .verified-check {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #3b82f6;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 11px;
+            color: white;
+            margin-left: 6px;
+            box-shadow: 0 0 0 1px var(--bg-card);
+        }
+
+        .social-info p {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-left: 4px;
+        }
+
+        .social-arrow {
+            color: var(--text-muted);
+            font-size: 18px;
+        }
+
+        /* RULES CARD */
+        .rules-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+
+        .rules-title {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--warning);
+            margin-bottom: 16px;
+        }
+
+        .rules-list {
+            list-style: none;
+            margin-bottom: 24px;
+        }
+
+        .rules-list li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .rules-list li:last-child {
+            border-bottom: none;
+        }
+
+        .rules-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--warning);
+        }
+
+        .whatsapp-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            border: none;
+            padding: 16px;
+            border-radius: 60px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .whatsapp-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(37, 211, 102, 0.3);
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            font-size: 11px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+        }
+
+        /* MODAL */
+        .modal {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            background: var(--bg-card);
+            border-radius: 28px 28px 0 0;
+            z-index: 1000;
+            transition: bottom 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border-top: 1px solid var(--border);
+        }
+
+        .modal.show {
+            bottom: 0;
+        }
+
+        .modal-handle {
+            width: 40px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin: 12px auto;
+        }
+
+        .modal-content {
+            padding: 20px 24px 32px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .number-box {
+            background: var(--bg-elevated);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            font-family: monospace;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            color: var(--accent);
+            user-select: all;
+        }
+
+        .copy-btn {
+            width: 100%;
+            background: var(--accent);
+            border: none;
+            padding: 14px;
+            border-radius: 60px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            opacity: 0.9;
+            transform: scale(0.98);
+        }
+
+        /* QRIS MODAL */
+        .qris-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.96);
+            backdrop-filter: blur(20px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .qris-card {
+            background: white;
+            border-radius: 32px;
+            padding: 32px;
+            width: 85%;
+            max-width: 320px;
+            text-align: center;
+            animation: zoomIn 0.3s ease;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .qris-card img {
+            width: 100%;
+        }
+
+        .qris-close {
+            background: var(--danger);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 60px;
+            color: white;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-size: 13px;
+            z-index: 2001;
+            transition: transform 0.3s;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div class="loading-screen" id="loadingScreen">
+    <div class="loader">
+        <div class="loader-ring"></div>
+        <div class="loader-text">Payment Smart</div>
+        <div class="loader-bar">
+            <div class="loader-bar-fill" id="loaderFill"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">Berhasil disalin</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content" id="mainContent">
+    <div class="theme-toggle">
+        <button class="theme-btn" id="themeToggle">🌙</button>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="badge">VERIFIED MERCHANT</div>
+            <h1 class="store-name">Putz Pymnt DEV</h1>
+            <p class="slogan">Selamat Datang Di All Payment Kami<br>Pilih Salah Satu Pembayaran</p>
+        </div>
+
+        <!-- TAB MENU -->
+        <div class="tab-container">
+            <div class="tab-header">
+                <button class="tab-btn active" data-tab="ewallet">E-WALLET</button>
+                <button class="tab-btn" data-tab="bank">BANK</button>
+                <button class="tab-btn" data-tab="qris">QRIS</button>
+            </div>
+        </div>
+
+        <!-- TAB PANES -->
+        <div class="content-container">
+            <div class="tab-pane active-pane" id="pane-ewallet">
+                <div class="payment-list" id="ewalletList"></div>
+            </div>
+            <div class="tab-pane" id="pane-bank">
+                <div class="payment-list" id="bankList"></div>
+            </div>
+            <div class="tab-pane" id="pane-qris">
+                <div class="payment-list" id="qrisList"></div>
+            </div>
+        </div>
+
+        <!-- SOCIAL MEDIA SECTION dengan Ceklis Biru di Belakang Nama -->
+        <div class="social-section">
+            <div class="social-title">
+                <span>🔗</span> Gabung Sosial Media Resmi Admin
+            </div>
+            <div class="social-grid" id="socialGrid"></div>
+        </div>
+
+        <!-- RULES -->
+        <div class="rules-card">
+            <div class="rules-title">PERINGATAN & PERATURAN</div>
+            <ul class="rules-list">
+                <li>Transfer sesuai dengan nominal yang tertera</li>
+                <li>Pastikan nomor tujuan sudah benar sebelum transfer</li>
+                <li>Pembayaran tidak dapat dikembalikan (non-refundable)</li>
+                <li>Konfirmasi pembayaran maksimal 1x24 jam</li>
+                <li>Kirim bukti transfer setelah melakukan pembayaran</li>
+            </ul>
+            <button class="whatsapp-btn" id="whatsappBtn">
+                <span>📎</span> KIRIM BUKTI TRANSFER VIA WHATSAPP
+            </button>
+        </div>
+
+        <footer>
+            <p>© 2024 AllSmart'Payment — Secure Payment Gateway</p>
+        </footer>
+    </div>
+</div>
+
+<!-- MODAL NUMBER -->
+<div class="modal" id="numberModal">
+    <div class="modal-handle"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">Nomor Pembayaran</h3>
+            <button class="modal-close" id="modalCloseBtn">✕</button>
+        </div>
+        <div class="number-box" id="numberDisplay">-</div>
+        <button class="copy-btn" id="copyBtn">Salin Nomor</button>
+    </div>
+</div>
+
+<!-- QRIS MODAL -->
+<div class="qris-modal" id="qrisModal">
+    <div class="qris-card">
+        <img id="qrisImage" src="" alt="QRIS">
+        <br>
+        <button class="qris-close" id="qrisCloseBtn">Tutup</button>
+    </div>
+</div>
+
+<script>
+    // PAYMENT DATA
+    const ewalletData = [
+        { name: "DANA", number: "081234567890", color: "#1572e4", icon: "D" },
+        { name: "OVO", number: "081234567891", color: "#4caf50", icon: "O" },
+        { name: "GoPay", number: "081234567892", color: "#00a9d4", icon: "G" },
+        { name: "LinkAja", number: "081234567893", color: "#ff6b00", icon: "L" }
+    ];
+
+    const bankData = [
+        { name: "BRI", number: "888101234567890", color: "#004d99", icon: "B" },
+        { name: "BCA", number: "1234567891", color: "#003399", icon: "B" },
+        { name: "Mandiri", number: "1234567892", color: "#ff6600", icon: "M" },
+        { name: "BNI", number: "1234567893", color: "#0055aa", icon: "B" }
+    ];
+
+    const qrisData = [
+        { name: "QRIS All Payment", qrisUrl: "https://files.catbox.moe/zwf1ny.jpg"+Date.now(), color: "#6366f1", icon: "Q" }
+    ];
+
+    // SOCIAL MEDIA DATA dengan ceklis biru di belakang nama
+    const socialData = [
+        { name: "Grup WhatsApp", url: "https://chat.whatsapp.com/", icon: "💬", color: "#25D366" },
+        { name: "Saluran WhatsApp", url: "https://whatsapp.com/channel/", icon: "📢", color: "#25D366" },
+        { name: "TikTok", url: "https://tiktok.com/@", icon: "🎵", color: "#000000" },
+        { name: "Instagram", url: "https://instagram.com/", icon: "📸", color: "#E4405F" }
+    ];
+
+    let currentTheme = "dark";
+    let currentNumber = null;
+
+    // LOADING
+    let progress = 0;
+    const loaderFill = document.getElementById('loaderFill');
+    const loadingScreen = document.getElementById('loadingScreen');
+    const mainContent = document.getElementById('mainContent');
+
+    function simulateLoading() {
+        const interval = setInterval(() => {
+            progress += Math.random() * 10 + 3;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                setTimeout(() => {
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                        mainContent.style.opacity = '1';
+                        mainContent.style.visibility = 'visible';
+                        showToast('Selamat datang!', '#6366f1');
+                    }, 500);
+                }, 200);
+            }
+            loaderFill.style.width = progress + '%';
+        }, 70);
+    }
+    simulateLoading();
+
+    // RENDER PAYMENTS
+    function renderEwallet() {
+        const container = document.getElementById('ewalletList');
+        container.innerHTML = '';
+        ewalletData.forEach((item, i) => {
+            const card = createPaymentCard(item.name, item.number, item.color, item.icon, 'number');
+            card.style.animationDelay = `${i * 0.05}s`;
+            container.appendChild(card);
+        });
+    }
+
+    function renderBank() {
+        const container = document.getElementById('bankList');
+        container.innerHTML = '';
+        bankData.forEach((item, i) => {
+            const card = createPaymentCard(item.name, item.number, item.color, item.icon, 'number');
+            card.style.animationDelay = `${i * 0.05}s`;
+            container.appendChild(card);
+        });
+    }
+
+    function renderQris() {
+        const container = document.getElementById('qrisList');
+        container.innerHTML = '';
+        qrisData.forEach((item, i) => {
+            const card = createPaymentCard(item.name, item.qrisUrl, item.color, item.icon, 'qris');
+            card.style.animationDelay = `${i * 0.05}s`;
+            container.appendChild(card);
+        });
+    }
+
+    function createPaymentCard(name, value, color, icon, type) {
+        const div = document.createElement('div');
+        div.className = 'payment-card';
+        div.innerHTML = `
+            <div class="payment-left">
+                <div class="payment-icon" style="background: ${color}15; color: ${color}">${icon}</div>
+                <div class="payment-info">
+                    <h4>${name}</h4>
+                    <p>${type === 'qris' ? 'Scan QR Code untuk bayar' : 'Klik untuk lihat nomor'}</p>
+                </div>
+            </div>
+            <div class="payment-arrow">→</div>
+        `;
+        
+        if (type === 'qris') {
+            div.onclick = () => openQrisModal(value);
+        } else {
+            div.onclick = () => openModal(name, value);
+        }
+        
+        return div;
+    }
+
+    // RENDER SOCIAL MEDIA dengan ceklis biru di belakang nama (seperti centang biru TikTok/IG)
+    function renderSocialMedia() {
+        const container = document.getElementById('socialGrid');
+        container.innerHTML = '';
+        socialData.forEach((item, i) => {
+            const div = document.createElement('div');
+            div.className = 'social-item';
+            div.style.animationDelay = `${i * 0.05}s`;
+            div.innerHTML = `
+                <div class="social-left">
+                    <div class="social-icon" style="background: ${item.color}15; color: ${item.color}">${item.icon}</div>
+                    <div class="social-info">
+                        <h4>
+                            ${item.name}
+                            <span class="verified-check">✓</span>
+                        </h4>
+                        <p>Official Channel</p>
+                    </div>
+                </div>
+                <div class="social-arrow">→</div>
+            `;
+            div.onclick = () => openSocialLink(item.url, item.name);
+            container.appendChild(div);
+        });
+    }
+
+    function openSocialLink(url, name) {
+        window.open(url, '_blank');
+        showToast(`Membuka ${name}...`, '#3b82f6');
+    }
+
+    // TAB SWITCH
+    function switchTab(tabId) {
+        const panes = document.querySelectorAll('.tab-pane');
+        const buttons = document.querySelectorAll('.tab-btn');
+        
+        buttons.forEach(btn => {
+            if (btn.dataset.tab === tabId) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+        
+        panes.forEach(pane => {
+            if (pane.id === `pane-${tabId}`) {
+                pane.classList.add('active-pane');
+            } else {
+                pane.classList.remove('active-pane');
+            }
+        });
+        
+        showToast(`${tabId.toUpperCase()}`, '#6366f1');
+    }
+
+    // MODAL FUNCTIONS
+    function openModal(name, number) {
+        currentNumber = number;
+        document.getElementById('modalTitle').innerText = name;
+        document.getElementById('numberDisplay').innerText = number;
+        document.getElementById('numberModal').classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        document.getElementById('numberModal').classList.remove('show');
+        document.body.style.overflow = 'auto';
+    }
+
+    function copyNumber() {
+        if (currentNumber) {
+            navigator.clipboard.writeText(currentNumber).then(() => {
+                showToast(`Nomor ${currentNumber} berhasil disalin!`, '#10b981');
+                closeModal();
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = currentNumber;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast(`Nomor berhasil disalin!`, '#10b981');
+                closeModal();
+            });
+        }
+    }
+
+    function openQrisModal(url) {
+        const modal = document.getElementById('qrisModal');
+        document.getElementById('qrisImage').src = url;
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeQrisModal() {
+        document.getElementById('qrisModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // THEME TOGGLE
+    function toggleTheme() {
+        const btn = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        
+        if (currentTheme === 'dark') {
+            html.setAttribute('data-theme', 'light');
+            currentTheme = 'light';
+            btn.innerHTML = '☀️';
+            showToast('Mode Terang', '#4f46e5');
+        } else {
+            html.setAttribute('data-theme', 'dark');
+            currentTheme = 'dark';
+            btn.innerHTML = '🌙';
+            showToast('Mode Gelap', '#6366f1');
+        }
+    }
+
+    // WHATSAPP
+    function sendToWhatsApp() {
+        const msg = `Halo Admin AllSmart'Payment,
+
+Saya ingin mengirim bukti transfer pembayaran.
+
+Detail:
+- Metode: (sebutkan)
+- Jumlah: (isi nominal)
+- Waktu: (isi waktu)
+
+Bukti transfer terlampir.
+
+Terima kasih.`;
+        window.open(`https://wa.me/6281234567890?text=${encodeURIComponent(msg)}`, '_blank');
+        showToast('Membuka WhatsApp...', '#25D366');
+    }
+
+    // TOAST
+    function showToast(message, color) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.style.borderTop = `3px solid ${color}`;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // EVENT LISTENERS
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+
+    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+    document.getElementById('whatsappBtn').addEventListener('click', sendToWhatsApp);
+    document.getElementById('copyBtn').addEventListener('click', copyNumber);
+    document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+    document.getElementById('qrisCloseBtn').addEventListener('click', closeQrisModal);
+
+    // Close modals on backdrop click
+    document.addEventListener('click', (e) => {
+        const modal = document.getElementById('numberModal');
+        const qrisModalEl = document.getElementById('qrisModal');
+        
+        if (modal.classList.contains('show')) {
+            if (!modal.contains(e.target) && !e.target.closest('.payment-card')) {
+                closeModal();
+            }
+        }
+        
+        if (qrisModalEl.style.display === 'flex') {
+            if (e.target === qrisModalEl) {
+                closeQrisModal();
+            }
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+            closeQrisModal();
+        }
+    });
+
+    // INIT
+    renderEwallet();
+    renderBank();
+    renderQris();
+    renderSocialMedia();
+    document.documentElement.setAttribute('data-theme', 'dark');
+</script>
+</body>
+</html>
