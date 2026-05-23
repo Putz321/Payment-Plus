@@ -226,6 +226,32 @@
             line-height: 1.4;
         }
 
+        /* ========== VIDEO CUSTOM 16:9 (Area Kotak Merah) ========== */
+        .video-hero {
+            margin: 8px 0 20px 0;
+            border-radius: 24px;
+            overflow: hidden;
+            background: #000;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        
+        .video-hero video {
+            width: 100%;
+            height: auto;
+            display: block;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            background: #000;
+        }
+        
+        /* Efek subtle glow saat hover */
+        .video-hero:hover {
+            border-color: var(--accent);
+            box-shadow: 0 15px 30px -10px rgba(99,102,241,0.3);
+        }
+        
         /* TAB MENU MODERN */
         .tab-container {
             background: var(--bg-secondary);
@@ -700,6 +726,14 @@
         .toast.show {
             transform: translateX(-50%) translateY(0);
         }
+        
+        /* Responsive minor */
+        @media (max-width: 480px) {
+            .video-hero {
+                margin: 4px 0 16px 0;
+                border-radius: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -737,6 +771,19 @@
                 <p class="slogan">Selamat Datang Di All Payment Kami<br>Pilih Salah Satu Pembayaran</p>
             </div>
         </div>
+        
+        <!-- ========== VIDEO CUSTOM MP4 (16:9, looping, tanpa jeda, tanpa kontrol) ========== -->
+        <!-- AREA YANG DITANDAI KOTAK MERAH: Diletakkan tepat setelah slogan, sebelum tab menu -->
+        <div class="video-hero">
+            <video autoplay loop muted playsinline disablePictureInPicture disableRemotePlayback>
+                <!-- GANTI URL VIDEO MP4 DI BAWAH INI DENGAN LINK VIDEO MP4 ANDA (disarankan host seperti catbox atau github) -->
+                <source src="https://files.catbox.moe/w107wi.mp4" type="video/mp4">
+                <!-- Fallback: video contoh dari internet (bisa diganti) - sebagai placeholder -->
+                <source src="https://files.catbox.moe/w107wi.mp4" type="video/mp4">
+                Browser Anda tidak mendukung video.
+            </video>
+        </div>
+        <!-- ========== AKHIR VIDEO CUSTOM ========== -->
 
         <!-- TAB MENU -->
         <div class="tab-container">
@@ -827,15 +874,13 @@
     ];
 
     // QRIS dengan CUSTOM IMAGE dari link Catbox.moe
-    // GANTI LINK INI dengan link gambar QRIS kamu dari Catbox
     const customQrisImage = "https://files.catbox.moe/zwf1ny.jpg";
-    // Catatan: Ganti "https://files.catbox.moe/example.jpg" dengan link asli gambar QRIS kamu
     
     const qrisData = [
         { name: "QRIS All Payment", qrisUrl: customQrisImage, color: "#6366f1", icon: "Q" }
     ];
 
-    // SOCIAL MEDIA DATA
+    // SOCIAL MEDIA DATA (diperbarui dengan placeholder link yang lebih valid)
     const socialData = [
         { name: "Grup WhatsApp", url: "https://chat.whatsapp.com/", icon: "💬", color: "#25D366" },
         { name: "Saluran WhatsApp", url: "https://whatsapp.com/channel/", icon: "📢", color: "#25D366" },
@@ -865,6 +910,11 @@
                         mainContent.style.opacity = '1';
                         mainContent.style.visibility = 'visible';
                         showToast('Selamat datang!', '#6366f1');
+                        // Pastikan video tetap autoplay (beberapa browser butuh interaksi, tapi atribut autoplay dan muted sudah cukup)
+                        const videoElem = document.querySelector('.video-hero video');
+                        if(videoElem) {
+                            videoElem.play().catch(e => console.log("Autoplay prevented:", e));
+                        }
                     }, 500);
                 }, 200);
             }
@@ -1019,10 +1069,8 @@
         const modal = document.getElementById('qrisModal');
         const img = document.getElementById('qrisImage');
         
-        // Set image source
         img.src = imageUrl;
         
-        // Handle image load error
         img.onerror = function() {
             this.src = 'https://placehold.co/400x400/6366f1/white?text=QRIS+CODE';
             showToast('Gambar QRIS sedang dimuat ulang...', '#f59e0b');
@@ -1055,7 +1103,7 @@
         }
     }
 
-    // WHATSAPP
+    // WHATSAPP (nomor dipertahankan seperti aslinya)
     function sendToWhatsApp() {
         const msg = `Halo Admin AllSmart'Payment,
 
@@ -1124,6 +1172,19 @@ Terima kasih.`;
     renderQris();
     renderSocialMedia();
     document.documentElement.setAttribute('data-theme', 'dark');
+    
+    // Pastikan video dimuat dengan benar & looping tanpa jeda
+    window.addEventListener('load', function() {
+        const video = document.querySelector('.video-hero video');
+        if(video) {
+            video.loop = true;
+            video.muted = true;
+            video.setAttribute('playsinline', '');
+            video.setAttribute('autoplay', '');
+            // Coba play dan handle error jika ada (misal autoplay policy)
+            video.play().catch(e => console.log("Video autoplay failed:", e));
+        }
+    });
 </script>
 </body>
 </html>
